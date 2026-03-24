@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import AllPlaces from './screens/AllPlaces';
 import AddPlace from './screens/AddPlace';
+import IconButton from './components/UI/IconButton';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,8 +14,28 @@ export default function App() {
       <StatusBar style="auto" />
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="AllPlaces" component={AllPlaces} />
-          <Stack.Screen name="AddPlace" component={AddPlace} />
+          <Stack.Screen
+            name="AllPlaces"
+            component={AllPlaces}
+            options={({ navigation }) => ({
+              title: 'Your Favorite Places',
+              headerRight: ({ tintColor }) => (
+                <IconButton
+                  icon="add"
+                  size={24}
+                  color={tintColor}
+                  onPress={() => navigation.navigate('AddPlace')}
+                />
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="AddPlace"
+            component={AddPlace}
+            options={{
+              title: 'Add a new Place',
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </>
