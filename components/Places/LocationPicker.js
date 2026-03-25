@@ -5,6 +5,7 @@ import { Colors } from '../../constants/colors';
 import {
   getCurrentPositionAsync,
   PermissionStatus,
+  reverseGeocodeAsync,
   useForegroundPermissions,
 } from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
@@ -24,6 +25,31 @@ function LocationPicker({ onPickLocation }) {
   const route = useRoute();
   const isFocused = useIsFocused();
 
+  const reverseGeocode = async (latitude, longitude) => {
+    try {
+      const reverseCodedAddress = await reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
+      // The result is an array of potential addresses. The first element is often the most relevant.
+      if (reverseCodedAddress && reverseCodedAddress.length > 0) {
+        const address = reverseCodedAddress[0];
+        console.log(
+          'Formatted Address:',
+          address.street,
+          address.city,
+          address.region,
+          address.country
+        );
+        console.log('City:', address.city);
+        console.log('Postal Code:', address.postalCode);
+        return address;
+      }
+    } catch (e) {
+      console.error('Error during reverse geocoding:', e);
+    }
+  };
+
   useEffect(() => {
     if (isFocused && route.params) {
       const mapPickedLocation = {
@@ -35,7 +61,10 @@ function LocationPicker({ onPickLocation }) {
   }, [route, isFocused]);
 
   useEffect(() => {
-    onPickLocation(pickedLocation);
+    if (pickedLocation) {
+      reverseGeocode(pickedLocation.lat, pickedLocation.lng);
+      onPickLocation(pickedLocation);
+    }
   }, [pickedLocation, onPickLocation]);
 
   async function verifyPermission() {
