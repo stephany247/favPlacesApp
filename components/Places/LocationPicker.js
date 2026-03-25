@@ -9,11 +9,15 @@ import {
 } from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import { Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 function LocationPicker() {
   const [pickedLocation, setPickedLocation] = useState();
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
+
+  const navigation = useNavigation();
+
   async function verifyPermission() {
     if (
       locationPermissionInformation.status === PermissionStatus.UNDETERMINED
@@ -51,7 +55,9 @@ function LocationPicker() {
     console.log(location);
     console.log(location.coords);
   }
-  function pickOnMapHandler() {}
+  function pickOnMapHandler() {
+    navigation.navigate('Map');
+  }
 
   return (
     <View>
