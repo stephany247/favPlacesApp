@@ -15,7 +15,7 @@ import {
   useRoute,
 } from '@react-navigation/native';
 
-function LocationPicker() {
+function LocationPicker({ onPickLocation }) {
   const [pickedLocation, setPickedLocation] = useState();
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
@@ -33,6 +33,10 @@ function LocationPicker() {
       setPickedLocation(mapPickedLocation);
     }
   }, [route, isFocused]);
+
+  useEffect(() => {
+    onPickLocation(pickedLocation);
+  }, [pickedLocation, onPickLocation]);
 
   async function verifyPermission() {
     if (
@@ -67,12 +71,9 @@ function LocationPicker() {
       lat: location.coords.latitude,
       lng: location.coords.longitude,
     });
-
-    console.log(location);
-    console.log(location.coords);
   }
   function pickOnMapHandler() {
-    navigation.navigate('Map');
+    navigation.push('Map');
   }
 
   return (
