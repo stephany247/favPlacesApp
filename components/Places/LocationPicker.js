@@ -31,19 +31,17 @@ function LocationPicker({ onPickLocation }) {
         latitude,
         longitude,
       });
-      // The result is an array of potential addresses. The first element is often the most relevant.
+
       if (reverseCodedAddress && reverseCodedAddress.length > 0) {
         const address = reverseCodedAddress[0];
-        console.log(
-          'Formatted Address:',
-          address.street,
-          address.city,
-          address.region,
-          address.country
-        );
-        console.log('City:', address.city);
-        console.log('Postal Code:', address.postalCode);
-        return address;
+
+        const formattedAddress = `${address.name || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`;
+
+        return {
+          lat: latitude,
+          lng: longitude,
+          address: formattedAddress,
+        };
       }
     } catch (e) {
       console.error('Error during reverse geocoding:', e);
@@ -61,10 +59,16 @@ function LocationPicker({ onPickLocation }) {
   }, [route, isFocused]);
 
   useEffect(() => {
-    if (pickedLocation) {
-      reverseGeocode(pickedLocation.lat, pickedLocation.lng);
-      onPickLocation(pickedLocation);
+    async function handleLocation() {
+      if (pickedLocation) {
+        const address = await reverseGeocode(
+          pickedLocation.lat,
+          pickedLocation.lng
+        );
+        onPickLocation({ ...pickedLocation, address: address });
+      }
     }
+    handleLocation();
   }, [pickedLocation, onPickLocation]);
 
   async function verifyPermission() {
