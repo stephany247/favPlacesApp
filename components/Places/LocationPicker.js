@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import OutlinedButton from '../UI/OutlinedButton';
 import { Colors } from '../../constants/colors';
@@ -7,8 +7,11 @@ import {
   PermissionStatus,
   useForegroundPermissions,
 } from 'expo-location';
+import MapView, { Marker } from 'react-native-maps';
+import { Text } from 'react-native';
 
 function LocationPicker() {
+  const [pickedLocation, setPickedLocation] = useState();
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
   async function verifyPermission() {
@@ -40,6 +43,10 @@ function LocationPicker() {
     }
 
     const location = await getCurrentPositionAsync();
+    setPickedLocation({
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
+    });
 
     console.log(location);
     console.log(location.coords);
@@ -48,7 +55,28 @@ function LocationPicker() {
 
   return (
     <View>
-      <View style={styles.mapPreview}></View>
+      <View style={styles.mapPreview}>
+        {pickedLocation ? (
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: pickedLocation.lat,
+              longitude: pickedLocation.lng,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: pickedLocation.lat,
+                longitude: pickedLocation.lng,
+              }}
+            />
+          </MapView>
+        ) : (
+          <Text>No location chosen yet!</Text>
+        )}
+      </View>
       <View style={styles.actions}>
         <OutlinedButton icon="location" onPress={getLocationHandler}>
           Locate User
@@ -71,6 +99,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.primary100,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  map: {
+    width: '100%',
+    height: '100%',
     borderRadius: 4,
   },
   actions: {
