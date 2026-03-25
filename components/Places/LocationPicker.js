@@ -37,11 +37,7 @@ function LocationPicker({ onPickLocation }) {
 
         const formattedAddress = `${address.name || ''}, ${address.city || ''}, ${address.region || ''}, ${address.country || ''}`;
 
-        return {
-          lat: latitude,
-          lng: longitude,
-          address: formattedAddress,
-        };
+        return formattedAddress;
       }
     } catch (e) {
       console.error('Error during reverse geocoding:', e);
